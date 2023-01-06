@@ -1,0 +1,66 @@
+name: Build debian package
+
+on:
+  push:
+    tags:
+      - v*
+
+  pull_request:
+    paths:
+      - 'debian/changelog'
+      - 'etc/DependencyInstaller.sh'
+      - 'docker/*'
+      - '.github/workflows/github-actions-build-deb-package.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  builder:
+    name: 'Build debian package'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['debian10', 'debian11', 'ubuntu20', 'ubuntu22', 'ubuntu2210']
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: true
+      
+      - name: Create docker image
+        run: |
+          ./etc/DockerHelper.sh create -target=dev -os=${{ matrix.os }}
+
+      - name: Build package
+        run: |
+          set -ex
+          mkdir artifacts
+          docker run \
+          -v `realpath ./artifacts`:/artifacts \
+          -v `pwd`:/OpenROAD \
+          openroad/${{ matrix.os }}-dev:latest \
+          bash -c "set -ex
+            cd OpenROAD
+            debuild --preserve-env --preserve-envvar=PATH -B
+            mv ../openroad_* artifacts"
+      
+      - name: Rename artifact
+        id: artifact
+        run: |
+          set -ex
+          cd artifacts
+          file=$(realpath openroad_*.deb)
+          artifact=$(echo $file | sed 's/\.\([^.]*\)$/-${{ matrix.os }}.\1/')
+          mv $file $artifact
+          echo "file=$(realpath $artifact)" >> $GITHUB_OUTPUT
+      
+      - name: Upload artifact
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: ${{ steps.artifact.outputs.file }}
+      
