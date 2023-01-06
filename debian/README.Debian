@@ -1,0 +1,5 @@
+openroad for Debian
+
+OpenROAD is an integrated chip physical design tool that takes a design from synthesized Verilog to routed layout.
+
+ -- Vegard Strand Lende <vegard@ascenium.com>  Wed, 04 Jan 2023 13:01:27 +0100
