@@ -167,7 +167,9 @@ _installUbuntuPackages() {
         tcllib \
         wget \
         zlib1g-dev \
-        libomp-dev
+        libomp-dev \
+        devscripts \
+        debhelper
 
     apt-get install -y \
         binutils \
@@ -420,7 +422,9 @@ _installDebianPackages() {
         tcllib \
         wget \
         zlib1g-dev \
-        libomp-dev
+        libomp-dev \
+        devscripts \
+        debhelper
 
     apt-get install -y \
         binutils \
