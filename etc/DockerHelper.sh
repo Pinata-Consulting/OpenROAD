@@ -59,6 +59,9 @@ _setup() {
         "ubuntu22")
             osBaseImage="ubuntu:22.04"
             ;;
+        "ubuntu2210")
+            osBaseImage="ubuntu:22.10"
+            ;;
         "opensuse")
             osBaseImage="opensuse/leap"
             ;;
