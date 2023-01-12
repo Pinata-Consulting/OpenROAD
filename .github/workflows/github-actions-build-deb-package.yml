@@ -1,16 +1,18 @@
 name: Build debian package
 
 on:
-  push:
-    tags:
-      - v*
+  workflow_dispatch:
 
-  pull_request:
-    paths:
-      - 'debian/changelog'
-      - 'etc/DependencyInstaller.sh'
-      - 'docker/*'
-      - '.github/workflows/github-actions-build-deb-package.yml'
+  #push:
+  #  tags:
+  #    - v*
+
+  #pull_request:
+  #  paths:
+  #    - 'debian/changelog'
+  #    - 'etc/DependencyInstaller.sh'
+  #    - 'docker/*'
+  #    - '.github/workflows/github-actions-build-deb-package.yml'
 
 jobs:
   builder:
@@ -53,9 +55,18 @@ jobs:
           artifact=$(echo $file | sed 's/\.\([^.]*\)$/-${{ matrix.os }}.\1/')
           mv $file $artifact
           echo "file=$(realpath $artifact)" >> $GITHUB_OUTPUT
+          name=$(basename $artifact)
+          name=${name%.deb}
+          echo "name=$name" >> $GITHUB_OUTPUT
 
-      - name: Upload artifact
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/v')
+      #- name: Upload release artifact
+      #  uses: softprops/action-gh-release@v1
+      #  if: startsWith(github.ref, 'refs/tags/v')
+      #  with:
+      #    files: ${{ steps.artifact.outputs.file }}
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v3
         with:
-          files: ${{ steps.artifact.outputs.file }}
+          name: ${{ steps.artifact.outputs.name }}
+          path: ${{ steps.artifact.outputs.file }}
