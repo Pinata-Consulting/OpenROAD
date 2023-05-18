@@ -37,11 +37,15 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QMenu>
+#include <QMutex>
 #include <QOpenGLWidget>
+#include <QPaintEvent>
 #include <QPixmap>
 #include <QScrollArea>
 #include <QShortcut>
+#include <QThread>
 #include <QTimer>
+#include <QWaitCondition>
 #include <chrono>
 #include <map>
 #include <memory>
@@ -49,6 +53,7 @@
 
 #include "gui/gui.h"
 #include "options.h"
+#include "renderThread.h"
 #include "search.h"
 
 namespace utl {
@@ -70,6 +75,7 @@ class GuiPainter;
 class LayoutScroll;
 class Ruler;
 class ScriptWidget;
+class LayoutViewer;
 
 // This class draws the layout.  It supports:
 //   * zoom in/out with ctrl-mousewheel
@@ -158,10 +164,10 @@ class LayoutViewer : public QWidget
   }
 
   // conversion functions
-  odb::Rect screenToDBU(const QRectF& rect);
-  odb::Point screenToDBU(const QPointF& point);
-  QRectF dbuToScreen(const odb::Rect& dbu_rect);
-  QPointF dbuToScreen(const odb::Point& dbu_point);
+  odb::Rect screenToDBU(const QRectF& rect) const;
+  odb::Point screenToDBU(const QPointF& point) const;
+  QRectF dbuToScreen(const odb::Rect& dbu_rect) const;
+  QPointF dbuToScreen(const odb::Point& dbu_point) const;
 
   // save image of the layout
   void saveImage(const QString& filepath,
@@ -261,10 +267,13 @@ class LayoutViewer : public QWidget
                          const QColor& color,
                          bool user_selected);
 
+  void exit();
+
  private slots:
   void setBlock(odb::dbBlock* block);
   void setResetRepaintInterval();
   void setLongRepaintInterval();
+  void updatePixmap(const QImage& image, const QRect& bounds);
 
  private:
   struct Boxes
@@ -279,64 +288,6 @@ class LayoutViewer : public QWidget
   void boxesByLayer(odb::dbMaster* master, LayerBoxes& boxes);
   const Boxes* boxesByLayer(odb::dbMaster* master, odb::dbTechLayer* layer);
   void setPixelsPerDBU(qreal pixels_per_dbu);
-  void drawBlock(QPainter* painter,
-                 odb::dbBlock* block,
-                 const odb::Rect& bounds,
-                 int depth);
-  void drawLayer(QPainter* painter,
-                 odb::dbBlock* block,
-                 odb::dbTechLayer* layer,
-                 const std::vector<odb::dbInst*>& insts,
-                 const odb::Rect& bounds,
-                 GuiPainter& gui_painter);
-  void drawRegions(QPainter* painter, odb::dbBlock* block);
-  void addInstTransform(QTransform& xfm, const odb::dbTransform& inst_xfm);
-  QColor getColor(odb::dbTechLayer* layer);
-  Qt::BrushStyle getPattern(odb::dbTechLayer* layer);
-  void drawTracks(odb::dbTechLayer* layer,
-                  QPainter* painter,
-                  const odb::Rect& bounds);
-
-  void drawInstanceOutlines(QPainter* painter,
-                            const std::vector<odb::dbInst*>& insts);
-  void drawInstanceShapes(odb::dbTechLayer* layer,
-                          QPainter* painter,
-                          const std::vector<odb::dbInst*>& insts,
-                          const odb::Rect& bounds,
-                          GuiPainter& gui_painter);
-  void drawInstanceNames(QPainter* painter,
-                         const std::vector<odb::dbInst*>& insts);
-  void drawBlockages(QPainter* painter,
-                     odb::dbBlock* block,
-                     const odb::Rect& bounds);
-  void drawObstructions(odb::dbBlock* block,
-                        odb::dbTechLayer* layer,
-                        QPainter* painter,
-                        const odb::Rect& bounds);
-  void drawRows(QPainter* painter,
-                odb::dbBlock* block,
-                const odb::Rect& bounds);
-  void drawViaShapes(QPainter* painter,
-                     odb::dbBlock* block,
-                     odb::dbTechLayer* cut_layer,
-                     odb::dbTechLayer* draw_layer,
-                     const odb::Rect& bounds,
-                     int shape_limit);
-  void drawManufacturingGrid(QPainter* painter, const odb::Rect& bounds);
-  void drawGCellGrid(QPainter* painter, const odb::Rect& bounds);
-  void drawSelected(Painter& painter);
-  void drawHighlighted(Painter& painter);
-  void drawPinMarkers(Painter& painter,
-                      odb::dbBlock* block,
-                      const odb::Rect& bounds);
-  void drawAccessPoints(Painter& painter,
-                        const std::vector<odb::dbInst*>& insts);
-  void drawRouteGuides(Painter& painter, odb::dbTechLayer* layer);
-  void drawNetTracks(Painter& painter, odb::dbTechLayer* layer);
-  void drawModuleView(QPainter* painter,
-                      const std::vector<odb::dbInst*>& insts);
-  void drawRulers(Painter& painter);
-  void drawScaleBar(QPainter* painter, const QRect& rect);
   void selectAt(odb::Rect region_dbu, std::vector<Selected>& selection);
   SelectionSet selectAt(odb::Rect region_dbu);
   void selectViaShapesAt(odb::dbTechLayer* cut_layer,
@@ -356,11 +307,11 @@ class LayoutViewer : public QWidget
 
   odb::Point getVisibleCenter();
 
-  int fineViewableResolution();
-  int nominalViewableResolution();
-  int coarseViewableResolution();
-  int instanceSizeLimit();
-  int shapeSizeLimit();
+  int fineViewableResolution() const;
+  int nominalViewableResolution() const;
+  int coarseViewableResolution() const;
+  int instanceSizeLimit() const;
+  int shapeSizeLimit() const;
 
   std::vector<std::pair<odb::dbObject*, odb::Rect>> getRowRects(
       odb::dbBlock* block,
@@ -391,12 +342,11 @@ class LayoutViewer : public QWidget
 
   odb::Point findNextRulerPoint(const odb::Point& mouse);
 
-  // build a cache of the layout to speed up future repainting
-  void updateBlockPainting(const QRect& area);
-
   void updateScaleAndCentering(const QSize& new_size);
 
   bool isNetVisible(odb::dbNet* net);
+
+  void drawScaleBar(QPainter* painter, const QRect& rect);
 
   void populateModuleColors();
 
@@ -449,10 +399,7 @@ class LayoutViewer : public QWidget
   };
   std::unique_ptr<AnimatedSelected> animate_selection_;
 
-  // Hold the last painted drawing of the layout
-  std::unique_ptr<QPixmap> block_drawing_;
   bool repaint_requested_;
-  std::chrono::time_point<std::chrono::system_clock> last_paint_time_;
   int repaint_interval_;  // milliseconds
 
   utl::Logger* logger_;
@@ -481,6 +428,10 @@ class LayoutViewer : public QWidget
   // Set of nets to draw assigned tracks for, if empty draw nothing
   std::set<odb::dbNet*> net_tracks_;
 
+  RenderThread viewer_thread_;
+  QPixmap draw_pixmap_;
+  QRect draw_pixmap_bounds_;
+
   static constexpr qreal zoom_scale_factor_ = 1.2;
 
   // parameters used to animate the selection of objects
@@ -488,6 +439,8 @@ class LayoutViewer : public QWidget
   static constexpr int animation_interval_ = 300;
 
   const QColor background_ = Qt::black;
+
+  friend class RenderThread;
 };
 
 // The LayoutViewer widget can become quite large as you zoom

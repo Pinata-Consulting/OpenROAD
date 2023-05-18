@@ -176,9 +176,9 @@ MainWindow::MainWindow(QWidget* parent)
         addRuler(x0, y0, x1, y1, "", "", default_ruler_style_->isChecked());
       });
 
-  connect(this, SIGNAL(selectionChanged()), viewer_, SLOT(update()));
-  connect(this, SIGNAL(highlightChanged()), viewer_, SLOT(update()));
-  connect(this, SIGNAL(rulersChanged()), viewer_, SLOT(update()));
+  connect(this, SIGNAL(selectionChanged()), viewer_, SLOT(fullRepaint()));
+  connect(this, SIGNAL(highlightChanged()), viewer_, SLOT(fullRepaint()));
+  connect(this, SIGNAL(rulersChanged()), viewer_, SLOT(fullRepaint()));
 
   connect(controls_,
           SIGNAL(selected(const Selected&)),
@@ -208,7 +208,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(inspector_,
           SIGNAL(selectedItemChanged(const Selected&)),
           viewer_,
-          SLOT(update()));
+          SLOT(fullRepaint()));
   connect(inspector_,
           SIGNAL(selectedItemChanged(const Selected&)),
           this,
@@ -562,6 +562,7 @@ void MainWindow::createActions()
       this, &MainWindow::designLoaded, [this]() { open_->setEnabled(false); });
   connect(hide_, SIGNAL(triggered()), this, SIGNAL(hide()));
   connect(exit_, SIGNAL(triggered()), this, SIGNAL(exit()));
+  connect(this, SIGNAL(exit()), viewer_, SLOT(exit()), Qt::QueuedConnection);
   connect(fit_, SIGNAL(triggered()), viewer_, SLOT(fit()));
   connect(zoom_in_, SIGNAL(triggered()), viewer_, SLOT(zoomIn()));
   connect(zoom_out_, SIGNAL(triggered()), viewer_, SLOT(zoomOut()));
