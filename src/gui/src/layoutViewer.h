@@ -245,8 +245,6 @@ class LayoutViewer : public QWidget
   // signals that the cache should be flushed and a full repaint should occur.
   void fullRepaint();
 
-  odb::Point getVisibleCenter();
-
   void selectHighlightConnectedInst(bool select_flag);
   void selectHighlightConnectedNets(bool select_flag, bool output, bool input);
 
