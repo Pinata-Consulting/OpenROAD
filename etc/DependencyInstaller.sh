@@ -180,7 +180,7 @@ _installUbuntuPackages() {
         tcl-tclreadline \
         wget
 
-    if [[ $1 == 22.10 ]]; then
+    if [[ $1 == 23.04 ]] || [[ $1 == 22.10 ]]; then
         apt-get install -y \
             qtbase5-dev \
             qtchooser \
@@ -535,6 +535,9 @@ EOF
         export spdlogFolder
         _installUbuntuPackages "${version}"
         _installCommonDev
+	    if [[ ${version} == 23.04 ]]; then
+	        version=22.10
+	    fi
         _installOrTools "ubuntu" "${version}" "amd64"
         _installUbuntuCleanUp
         ;;
