@@ -349,12 +349,12 @@ void ClockNodeGraphicsViewItem::setupToolTip(utl::Logger* logger)
 
   if (typeName == "Register") {
     // easier to search text than hover with mouse over the small icons
-    logger->info(utl::GUI,
-                 88,
-                 "{:40} {:40} {}",
-                 typeName.toStdString(),
-                 name.toStdString(),
-                 extra_tooltip_.replace("\n", "").toStdString());
+    // logger->info(utl::GUI,
+    //              88,
+    //              "{:40} {:40} {}",
+    //              typeName.toStdString(),
+    //              name.toStdString(),
+    //              extra_tooltip_.replace("\n", "").toStdString());
   }
 
   setToolTip(info);
@@ -1149,6 +1149,18 @@ ClockNodeGraphicsViewItem* ClockTreeView::addLeafToScene(
   odb::dbITerm* iterm;
   odb::dbBTerm* bterm;
   network->staToDb(input_pin.pin, iterm, bterm);
+
+  std::string name = iterm->getInst()->getName();
+  name += "/";
+  name += iterm->getMTerm()->getName();
+
+  logger_->info(utl::GUI,
+                90,
+                "{} {} {} {}",
+                iterm->getBBox().xMin(),
+                iterm->getBBox().yMin(),
+                name,
+                input_pin.delay);
 
   ClockRegisterNodeGraphicsViewItem* node
       = new ClockRegisterNodeGraphicsViewItem(iterm);
