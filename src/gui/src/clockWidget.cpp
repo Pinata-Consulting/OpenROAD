@@ -50,6 +50,7 @@
 #include <QVBoxLayout>
 #include <QWheelEvent>
 #include <QWidgetAction>
+#include <iostream>
 
 #include "colorGenerator.h"
 #include "dbDescriptors.h"
@@ -332,16 +333,28 @@ ClockNodeGraphicsViewItem::ClockNodeGraphicsViewItem(QGraphicsItem* parent)
   setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
-void ClockNodeGraphicsViewItem::setupToolTip()
+void ClockNodeGraphicsViewItem::setupToolTip(utl::Logger* logger)
 {
-  QString info = "Type: " + getType();
+  const auto typeName = getType();
+  QString info = "Type: " + typeName;
   info += "\n";
 
-  info += "Name: " + getName();
+  const auto name = getName();
+  info += "Name: " + name;
 
   if (!extra_tooltip_.isEmpty()) {
     info += "\n";
     info += extra_tooltip_;
+  }
+
+  if (typeName == "Register") {
+    // easier to search text than hover with mouse over the small icons
+    logger->info(utl::GUI,
+                 88,
+                 "{:40} {:40} {}",
+                 typeName.toStdString(),
+                 name.toStdString(),
+                 extra_tooltip_.replace("\n", "").toStdString());
   }
 
   setToolTip(info);
@@ -1095,10 +1108,10 @@ std::vector<ClockNodeGraphicsViewItem*> ClockTreeView::buildTree(
   }
 
   for (auto* driver : drivers) {
-    driver->setupToolTip();
+    driver->setupToolTip(logger_);
   }
   for (auto* fan : fanout) {
-    fan->setupToolTip();
+    fan->setupToolTip(logger_);
   }
 
   return drivers;
@@ -1210,13 +1223,28 @@ ClockNodeGraphicsViewItem* ClockTreeView::addCellToScene(
   scene_->addItem(node);
 
   QString tooltip;
-  tooltip += "Input: " + ClockNodeGraphicsViewItem::getITermName(input_term);
+  const auto input = ClockNodeGraphicsViewItem::getITermName(input_term);
+  const auto inputArrival = convertDelayToString(input_pin.delay);
+  const auto output = ClockNodeGraphicsViewItem::getITermName(output_term);
+  const auto outputLaunch = convertDelayToString(output_pin.delay);
+
+  tooltip += "Input: " + input;
   tooltip += "\n";
-  tooltip += "Input arrival: " + convertDelayToString(input_pin.delay);
+  tooltip += "Input arrival: " + inputArrival;
   tooltip += "\n";
-  tooltip += "Output: " + ClockNodeGraphicsViewItem::getITermName(output_term);
+  tooltip += "Output: " + output;
   tooltip += "\n";
-  tooltip += "Output launch: " + convertDelayToString(output_pin.delay);
+  tooltip += "Output launch: " + outputLaunch;
+
+  // // easier to search text than hover with mouse over the small icons
+  // logger_->info(utl::GUI,
+  //               89,
+  //               "{:40} {:40} {:40} {:40}",
+  //               input.toStdString(),
+  //               inputArrival.toStdString(),
+  //               output.toStdString(),
+  //               outputLaunch.toStdString());
+
   node->setExtraToolTip(tooltip);
 
   return node;

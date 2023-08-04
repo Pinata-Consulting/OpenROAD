@@ -161,7 +161,7 @@ class ClockNodeGraphicsViewItem : public QGraphicsItem
   virtual QString getName() const { return name_; };
   virtual QColor getColor() const = 0;
 
-  void setupToolTip();
+  void setupToolTip(utl::Logger* logger);
   void setExtraToolTip(const QString& tooltip) { extra_tooltip_ = tooltip; }
 
   qreal getSize() const { return size_; }
