@@ -392,7 +392,7 @@ static int tclAppInit(int& argc,
 
     const char* home = getenv("HOME");
     if (!findCmdLineFlag(argc, argv, "-no_init") && home) {
-      const char* restore_state_cmd = "source -echo -verbose {{{}}}";
+      const char* restore_state_cmd = "sta_source -echo -verbose {{{}}}";
 #ifdef USE_STD_FILESYSTEM
       std::filesystem::path init(home);
       init /= init_filename;
