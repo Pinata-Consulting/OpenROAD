@@ -126,6 +126,26 @@ VARIANTS = [
     "flat",
 ]
 
+orfs_run(
+    name = "write_macro_placement",
+    src = ":MockArray_floorplan",
+    outs = [
+        ":macro-placement.tcl",
+    ],
+    script = ":write_macros.tcl",
+    tags = ["manual"],
+)
+
+orfs_run(
+    name = "write_pin_placement",
+    src = ":MockArray_floorplan",
+    outs = [
+        ":io-placement.tcl",
+    ],
+    script = ":write_pin_placement.tcl",
+    tags = ["manual"],
+)
+
 [orfs_flow(
     name = "MockArray",
     arguments = {
@@ -165,7 +185,10 @@ VARIANTS = [
         "IO_CONSTRAINTS": [":mock-array-io"],
         "RULES_JSON": [":rules-{variant}.json".format(variant = variant)],
         "SDC_FILE": [":mock-array-constraints"],
-    },
+    } | ({
+        "IO_CONSTRAINTS": [":write_pin_placement"],
+        "MACRO_PLACEMENT_TCL": [":write_macro_placement"],
+    } if variant == "flat" else {}),
     tags = ["manual"],
     test_kwargs = {
         "tags": ["orfs"],
