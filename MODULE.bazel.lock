@@ -1075,7 +1075,7 @@
     "@@bazel-orfs+//:extension.bzl%orfs_repositories": {
       "general": {
         "bzlTransitiveDigest": "W2FcgOTim8eocKPV5zKBqUWCMCrRjVK8KK28G/2fPTE=",
-        "usagesDigest": "NevvkgnkhL0zxI6N5COMfpJsWtybRoFkQsciF6rF7a4=",
+        "usagesDigest": "mmEOr8dJbd0yojDOcae1ZRj6ddc1i+gFg5poaVeY1C8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1114,7 +1114,7 @@
               "makefile": "@@bazel-orfs++orfs_repositories+docker_orfs//:makefile",
               "pdk": "@@bazel-orfs++orfs_repositories+docker_orfs//:asap7",
               "makefile_yosys": "@@bazel-orfs++orfs_repositories+docker_orfs//:makefile_yosys",
-              "openroad": "@@//:openroad",
+              "openroad": "@@bazel-orfs++orfs_repositories+docker_orfs//:openroad",
               "yosys": "@@bazel-orfs++orfs_repositories+docker_orfs//:yosys",
               "yosys_abc": "@@bazel-orfs++orfs_repositories+docker_orfs//:yosys-abc"
             }

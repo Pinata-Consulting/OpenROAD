@@ -165,7 +165,7 @@ orfs.default(
     # Official image https://hub.docker.com/r/openroad/orfs/tags
     image = "docker.io/openroad/orfs:v3.0-3872-g66e441c6c",
     # Use OpenROAD of this repo instead of from the docker image
-    openroad = "//:openroad",
+    #openroad = "//:openroad",
     sha256 = "f75321f10023a8bf99b1ed5dfe1dab6351f588eda24f186a66e9145fd9b76fd1",
 )
 use_repo(orfs, "com_github_nixos_patchelf_download")
