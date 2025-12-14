@@ -72,6 +72,8 @@ def element(name, config):
     orfs_flow(
         name = "Element",
         arguments = {
+            # `make issue` needs this
+            "ADDITIONAL_FILES": "test/orfs/mock-array/util.tcl",
             "CORE_AREA": "{} {} {} {}".format(
                 ce_margin_x,
                 ce_margin_y,
@@ -254,6 +256,8 @@ def mock_array(name, config):
         orfs_flow(
             name = "MockArray",
             arguments = {
+                # `make issue` needs this
+                "ADDITIONAL_FILES": "test/orfs/mock-array/util.tcl test/orfs/mock-array/macro-placement.tcl",
                 "CORE_AREA": "{} {} {} {}".format(
                     array_spacing_x,
                     array_spacing_y,
