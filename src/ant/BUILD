@@ -25,9 +25,6 @@ cc_library(
     hdrs = [
         "include/ant/AntennaChecker.hh",
     ],
-    copts = [
-        "-fopenmp",
-    ],
     includes = [
         "include",
     ],

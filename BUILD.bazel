@@ -145,7 +145,6 @@ OPENROAD_COPTS = [
     "-Wno-sign-compare",
     "-Wno-unused-parameter",
     "-Wmismatched-tags",
-    "-fopenmp",
 ]
 
 OPENROAD_DEFINES = [

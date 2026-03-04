@@ -199,7 +199,6 @@ cc_library(
     ],
     copts = [
         "-Isrc/drt/src",
-        "-fopenmp",
     ],
     includes = [
         "include",

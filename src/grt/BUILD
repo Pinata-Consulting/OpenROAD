@@ -133,9 +133,6 @@ cc_library(
         "include/grt/RoutePt.h",
         "include/grt/Rudy.h",
     ],
-    copts = [
-        "-fopenmp",
-    ],
     includes = [
         "include",
     ],
@@ -186,7 +183,6 @@ cc_library(
     copts = [
         "-Isrc/grt/src",
         "-Wno-missing-braces",  # from TCL swigging
-        "-fopenmp",
     ],
     includes = [
         "include",

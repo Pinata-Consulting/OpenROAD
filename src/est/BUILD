@@ -73,7 +73,6 @@ cc_library(
     copts = [
         "-Isrc/est/src",
         "-Wno-missing-braces",  # from TCL swigging
-        "-fopenmp",
     ],
     includes = [
         "include",

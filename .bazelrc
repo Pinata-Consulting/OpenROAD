@@ -32,6 +32,13 @@ build:opt --linkopt=-flto
 # See also https://kristerw.github.io/2021/11/09/fp-contract/
 build --cxxopt "-ffp-contract=off" --host_cxxopt "-ffp-contract=off"
 
+# Use OpenMP for all OpenROAD code. External BCR deps (e.g. or-tools, eigen)
+# can't use it yet because the @openmp headers aren't in their sandbox and
+# toolchains_llvm doesn't expose omp.h (see bazel-contrib/toolchains_llvm#339).
+build --cxxopt "-fopenmp"               --host_cxxopt "-fopenmp"
+build --per_file_copt=external/.*@-fno-openmp
+build --host_per_file_copt=external/.*@-fno-openmp
+
 # allow exceptions.
 build  --cxxopt=-fexceptions    --host_cxxopt=-fexceptions
 

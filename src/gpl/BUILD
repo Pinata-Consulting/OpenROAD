@@ -52,9 +52,6 @@ cc_library(
         "src/graphicsNone.h",
         "src/mbff.h",
     ],
-    copts = [
-        "-fopenmp",
-    ],
     includes = [
         "include",
     ],
