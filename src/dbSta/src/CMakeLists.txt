@@ -11,6 +11,7 @@ add_library(dbSta_lib
   dbReadVerilog.cc
   SpefWriter.cc
   IpChecker.cc
+  GateSim.cc
 )
 
 target_include_directories(dbSta_lib

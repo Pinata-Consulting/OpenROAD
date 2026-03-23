@@ -197,5 +197,42 @@ proc check_ip { args } {
   return [sta::check_ip_cmd $master_name $check_all $max_polygons $verbose]
 }
 
+define_cmd_args "simulate_saif" \
+  { -cycles cycles [-saif filename] [-vcd filename] [-seed seed] }
+
+proc simulate_saif { args } {
+  parse_key_args "simulate_saif" args \
+    keys {-cycles -saif -vcd -seed} flags {}
+
+  check_argc_eq0 "simulate_saif" $args
+
+  if { ![info exists keys(-cycles)] } {
+    sta_error 1902 "simulate_saif requires -cycles."
+  }
+  set cycles $keys(-cycles)
+  check_positive_integer "-cycles" $cycles
+
+  set saif_file ""
+  if { [info exists keys(-saif)] } {
+    set saif_file [file nativename $keys(-saif)]
+  }
+
+  set vcd_file ""
+  if { [info exists keys(-vcd)] } {
+    set vcd_file [file nativename $keys(-vcd)]
+  }
+
+  if { $saif_file eq "" && $vcd_file eq "" } {
+    sta_error 1903 "simulate_saif requires -saif and/or -vcd."
+  }
+
+  set seed 42
+  if { [info exists keys(-seed)] } {
+    set seed $keys(-seed)
+  }
+
+  simulate_saif_cmd $cycles $saif_file $vcd_file $seed
+}
+
 # namespace
 }

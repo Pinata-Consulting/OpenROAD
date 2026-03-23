@@ -1,0 +1,162 @@
+VERSION 5.8 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+
+UNITS
+  DATABASE MICRONS 1000 ;
+END UNITS
+
+LAYER M1
+  TYPE ROUTING ;
+  DIRECTION HORIZONTAL ;
+  PITCH 0.2 ;
+  WIDTH 0.1 ;
+END M1
+
+SITE unit
+  SYMMETRY Y ;
+  CLASS CORE ;
+  SIZE 0.1 BY 0.5 ;
+END unit
+
+MACRO INV
+  CLASS CORE ;
+  ORIGIN 0 0 ;
+  SIZE 0.1 BY 0.5 ;
+  SITE unit ;
+  PIN A
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0 0 0.05 0.1 ;
+    END
+  END A
+  PIN Y
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.05 0 0.1 0.1 ;
+    END
+  END Y
+END INV
+
+MACRO AND2
+  CLASS CORE ;
+  ORIGIN 0 0 ;
+  SIZE 0.2 BY 0.5 ;
+  SITE unit ;
+  PIN A
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0 0 0.05 0.1 ;
+    END
+  END A
+  PIN B
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.05 0 0.1 0.1 ;
+    END
+  END B
+  PIN Y
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.1 0 0.15 0.1 ;
+    END
+  END Y
+END AND2
+
+MACRO OR2
+  CLASS CORE ;
+  ORIGIN 0 0 ;
+  SIZE 0.2 BY 0.5 ;
+  SITE unit ;
+  PIN A
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0 0 0.05 0.1 ;
+    END
+  END A
+  PIN B
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.05 0 0.1 0.1 ;
+    END
+  END B
+  PIN Y
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.1 0 0.15 0.1 ;
+    END
+  END Y
+END OR2
+
+MACRO XOR2
+  CLASS CORE ;
+  ORIGIN 0 0 ;
+  SIZE 0.2 BY 0.5 ;
+  SITE unit ;
+  PIN A
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0 0 0.05 0.1 ;
+    END
+  END A
+  PIN B
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.05 0 0.1 0.1 ;
+    END
+  END B
+  PIN Y
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.1 0 0.15 0.1 ;
+    END
+  END Y
+END XOR2
+
+MACRO DFF
+  CLASS CORE ;
+  ORIGIN 0 0 ;
+  SIZE 0.4 BY 0.5 ;
+  SITE unit ;
+  PIN CLK
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0 0 0.05 0.1 ;
+    END
+  END CLK
+  PIN D
+    DIRECTION INPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.05 0 0.1 0.1 ;
+    END
+  END D
+  PIN Q
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.1 0 0.15 0.1 ;
+    END
+  END Q
+  PIN QN
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER M1 ;
+        RECT 0.15 0 0.2 0.1 ;
+    END
+  END QN
+END DFF
+
+END LIBRARY

@@ -132,6 +132,22 @@ cc_library(
 )
 
 cc_library(
+    name = "GateSim",
+    srcs = [
+        "src/GateSim.cc",
+    ],
+    hdrs = [
+        "src/GateSim.hh",
+    ],
+    includes = [
+        "include",
+    ],
+    deps = [
+        "//src/sta:opensta_lib",
+    ],
+)
+
+cc_library(
     name = "ui",
     srcs = [
         "include/db_sta/IpChecker.hh",
@@ -151,6 +167,7 @@ cc_library(
         "include",
     ],
     deps = [
+        ":GateSim",
         ":IpChecker",
         ":dbNetwork",
         ":dbSta",

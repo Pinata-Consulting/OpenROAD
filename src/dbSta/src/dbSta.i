@@ -13,6 +13,7 @@
 #include "ord/OpenRoad.hh"
 #include "sta/Property.hh"
 #include "sta/VerilogWriter.hh"
+#include "GateSim.hh"
 
 namespace ord {
 // Defined in OpenRoad.i
@@ -252,6 +253,22 @@ check_ip_cmd(const char* master_name,
   } else {
     return checker.checkMaster(master_name);
   }
+}
+
+void
+simulate_saif_cmd(int cycles,
+                  const char *saif_file,
+                  const char *vcd_file,
+                  int seed)
+{
+  ord::OpenRoad *openroad = ord::getOpenRoad();
+  sta::dbSta *sta = openroad->getSta();
+  sta->ensureLinked();
+  sta::GateSim sim(sta);
+  // Empty string means no output for that format.
+  const char *saif = (saif_file && saif_file[0]) ? saif_file : nullptr;
+  const char *vcd = (vcd_file && vcd_file[0]) ? vcd_file : nullptr;
+  sim.simulate(cycles, saif, vcd, static_cast<uint32_t>(seed));
 }
 
 %} // inline
